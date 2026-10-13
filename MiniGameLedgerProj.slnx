@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Ledger,Application/Ledger,Application.csproj" />
+  <Project Path="Ledger.Api/Ledger.Api.csproj" />
+  <Project Path="Ledger.Domain/Ledger.Domain.csproj" />
+  <Project Path="Ledger.Infrastructure/Ledger.Infrastructure.csproj" Id="c8c3f4dc-1b02-4334-94bb-90140e91f3c3" />
+</Solution>
