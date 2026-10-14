@@ -9,20 +9,22 @@ namespace Ledger.Domain
     public sealed class LedgerTransaction
     {
         private readonly List<Entry> _entries = [];
-
+        public string? IdempotencyKey { get; private set; }
         public Guid Id { get; }
         public DateTimeOffset CreatedAt { get; }
         public IReadOnlyList<Entry> Entries => _entries;
 
-        private LedgerTransaction() { }                 
+        private LedgerTransaction() { }
 
-        private LedgerTransaction(Guid id, DateTimeOffset createdAt, List<Entry> entries)
+        private LedgerTransaction(Guid id, DateTimeOffset createdAt, List<Entry> entries, string? idempotencyKey)
         {
             Id = id;
             CreatedAt = createdAt;
             _entries = entries;
+            IdempotencyKey = idempotencyKey;
         }
-        public static LedgerTransaction Create(Guid id, DateTimeOffset createdAt, IEnumerable<Entry> entries)
+
+        public static LedgerTransaction Create(Guid id, DateTimeOffset createdAt, IEnumerable<Entry> entries, string? idempotencyKey = null)
         {
             var list = entries.ToList();
 
@@ -36,7 +38,7 @@ namespace Ledger.Domain
             if (unbalanced.Any())
                 throw new DomainException("Entries must sum to zero in every currency.");
 
-            return new LedgerTransaction(id, createdAt, list);
+            return new LedgerTransaction(id, createdAt, list, idempotencyKey);
         }
     }
 }

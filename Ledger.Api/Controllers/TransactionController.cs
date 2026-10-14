@@ -12,11 +12,12 @@ namespace Ledger.Api.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Post(
-            PostTransactionRequest request,
-            ICommandHandler<PostTransactionCommand, Guid> handler,
-            CancellationToken ct)
+    PostTransactionRequest request,
+    ICommandHandler<PostTransactionCommand, Guid> handler,
+    CancellationToken ct,
+    [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey = null)
         {
-            var id = await handler.HandleAsync(new PostTransactionCommand(request.Entries), ct);
+            var id = await handler.HandleAsync(new PostTransactionCommand(request.Entries, idempotencyKey), ct);
             return Created($"/api/transactions/{id}", new { id });
         }
     }

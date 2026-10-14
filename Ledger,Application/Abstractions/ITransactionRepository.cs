@@ -8,5 +8,6 @@ namespace Ledger_Application.Abstractions
     public interface ITransactionRepository
     {
         Task AddAsync(LedgerTransaction transaction, CancellationToken ct = default);
+        Task<Guid?> FindIdByKeyAsync(string key, CancellationToken ct = default);
     }
 }

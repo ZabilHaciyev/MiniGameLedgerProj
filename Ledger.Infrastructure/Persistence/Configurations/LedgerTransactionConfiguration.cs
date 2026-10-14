@@ -12,8 +12,10 @@ public class LedgerTransactionConfiguration : IEntityTypeConfiguration<LedgerTra
         b.HasKey(t => t.Id);
         b.Property(t => t.Id).ValueGeneratedNever();
         b.Property(t => t.CreatedAt).HasColumnName("created_at");
-
+        b.Property(t => t.IdempotencyKey).HasColumnName("idempotency_key").HasMaxLength(200);
+        b.HasIndex(t => t.IdempotencyKey).IsUnique();
         b.OwnsMany(t => t.Entries, ConfigureEntries);
+        b.Navigation(t => t.Entries).UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 
     private static void ConfigureEntries(OwnedNavigationBuilder<LedgerTransaction, Entry> e)

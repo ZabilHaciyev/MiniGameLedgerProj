@@ -13,6 +13,12 @@ namespace Ledger_Application.Transactions.PostTransaction
     {
         public async Task<Guid> HandleAsync(PostTransactionCommand command, CancellationToken ct = default)
         {
+            if (command.IdempotencyKey is not null)
+            {
+                var existing = await transactions.FindIdByKeyAsync(command.IdempotencyKey, ct);
+                if (existing is not null)
+                    return existing.Value;
+            }
             var ids = command.Entries.Select(e => e.AccountId).Distinct().ToList();
             var found = await accounts.GetByIdsAsync(ids, ct);
 
@@ -32,8 +38,7 @@ namespace Ledger_Application.Transactions.PostTransaction
 
                 entries.Add(new Entry(account.Id, new Money(dto.Amount, currency)));
             }
-
-            var tx = LedgerTransaction.Create(Guid.NewGuid(), DateTimeOffset.UtcNow, entries);
+            var tx = LedgerTransaction.Create(Guid.NewGuid(), DateTimeOffset.UtcNow, entries, command.IdempotencyKey);
             await transactions.AddAsync(tx, ct);
 
             return tx.Id;
