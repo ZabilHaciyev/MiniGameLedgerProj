@@ -46,6 +46,51 @@ namespace Ledger.Infrastructure.Migrations
                     b.ToTable("accounts", (string)null);
                 });
 
+            modelBuilder.Entity("Ledger.Domain.Category", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("categories", (string)null);
+                });
+
+            modelBuilder.Entity("Ledger.Domain.Item", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("category_id");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("items", (string)null);
+                });
+
             modelBuilder.Entity("Ledger.Domain.LedgerTransaction", b =>
                 {
                     b.Property<Guid>("Id")
@@ -66,6 +111,81 @@ namespace Ledger.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("transactions", (string)null);
+                });
+
+            modelBuilder.Entity("Ledger.Domain.Package", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<decimal>("PriceUsd")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<decimal>("RewardAmount")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("numeric(18,4)");
+
+                    b.Property<string>("RewardCurrency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("reward_currency");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("packages", (string)null);
+                });
+
+            modelBuilder.Entity("Ledger.Domain.Item", b =>
+                {
+                    b.HasOne("Ledger.Domain.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsMany("Ledger.Domain.ItemPrice", "Prices", b1 =>
+                        {
+                            b1.Property<int>("id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("id"));
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 4)
+                                .HasColumnType("numeric(18,4)")
+                                .HasColumnName("amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("currency");
+
+                            b1.Property<string>("item_id")
+                                .IsRequired()
+                                .HasColumnType("character varying(50)");
+
+                            b1.HasKey("id");
+
+                            b1.HasIndex("item_id", "Currency")
+                                .IsUnique();
+
+                            b1.ToTable("item_prices", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("item_id");
+                        });
+
+                    b.Navigation("Prices");
                 });
 
             modelBuilder.Entity("Ledger.Domain.LedgerTransaction", b =>

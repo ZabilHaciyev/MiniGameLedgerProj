@@ -12,5 +12,6 @@ namespace Ledger_Application.Abstractions
         Task<List<Account>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default);
         Task<bool> NameExistsAsync(string name, CancellationToken ct = default);
         Task AddAsync(Account account, CancellationToken ct = default);
+        Task<Account?> GetByNameAsync(string name, CancellationToken ct = default);
     }
 }

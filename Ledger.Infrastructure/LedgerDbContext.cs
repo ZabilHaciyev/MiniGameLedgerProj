@@ -11,6 +11,9 @@ namespace Ledger.Infrastructure
     {
         public DbSet<Account> Accounts => Set<Account>();
         public DbSet<LedgerTransaction> Transactions => Set<LedgerTransaction>();
+        public DbSet<Package> Packages => Set<Package>();
+        public DbSet<Category> Categories => Set<Category>();
+        public DbSet<Item> Items => Set<Item>();
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Properties<Currency>()

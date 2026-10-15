@@ -31,5 +31,10 @@ namespace Ledger.Infrastructure.Persistence
             return await EntityFrameworkQueryableExtensions.ToListAsync(
                 db.Accounts.Where(a => list.Contains(a.Id)), ct);
         }
+        public async Task<Account?> GetByNameAsync(string name, CancellationToken ct = default)
+        {
+            return await EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(
+                db.Accounts, a => a.Name == name, ct);
+        }
     }
 }
